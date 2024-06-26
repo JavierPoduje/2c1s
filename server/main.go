@@ -12,22 +12,20 @@ const (
 )
 
 type Server struct {
-	clients []net.Conn
-}
-
-var (
+	clients    []net.Conn
 	clientsMtx sync.Mutex
-)
+}
 
 func NewServer() *Server {
 	return &Server{
-		clients: []net.Conn{},
+		clients:    []net.Conn{},
+		clientsMtx: sync.Mutex{},
 	}
 }
 
 func (s *Server) SendMessageToClients() {
-	clientsMtx.Lock()
-	defer clientsMtx.Unlock()
+	s.clientsMtx.Lock()
+	defer s.clientsMtx.Unlock()
 
 	message := []byte("Hello, clients!\n")
 
@@ -69,9 +67,9 @@ func (s *Server) Start() {
 
 		fmt.Println("New client connected:", conn.RemoteAddr().String())
 
-		clientsMtx.Lock()
+		s.clientsMtx.Lock()
 		s.clients = append(s.clients, conn)
-		clientsMtx.Unlock()
+		s.clientsMtx.Unlock()
 
 		go handleClient(conn)
 	}
@@ -81,7 +79,6 @@ func (s *Server) Start() {
 func main() {
 	s := NewServer()
 	s.Start()
-	//StartServer()
 }
 
 func handleClient(conn net.Conn) {
