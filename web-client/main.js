@@ -25,7 +25,6 @@ wss.on("connection", (ws) => {
 	});
 
 	tcpClient.on("data", (data) => {
-    // console.log to cli
 		console.log("Received from TCP server:", data.toString());
 		ws.send(data.toString());
 	});

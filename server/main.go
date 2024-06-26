@@ -60,7 +60,7 @@ func StartServer() {
 func handleClient(conn net.Conn) {
 	defer conn.Close()
 
-	// Placeholder for any client-specific handling
+	// Placeholder for any client-specific handling. could be useful later...
 	select {}
 }
 
@@ -81,9 +81,9 @@ func sendToClients() {
 	}
 }
 
-func removeClient(clients []net.Conn, target net.Conn) []net.Conn {
+func removeClient(clients []net.Conn, clientToRemove net.Conn) []net.Conn {
 	for i, conn := range clients {
-		if conn == target {
+		if conn == clientToRemove {
 			return append(clients[:i], clients[i+1:]...)
 		}
 	}
