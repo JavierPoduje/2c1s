@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
+	"os"
 	"sync"
 	"time"
-)
 
-const (
-	address = "127.0.0.1:12345"
+	"github.com/joho/godotenv"
 )
 
 type Server struct {
@@ -40,14 +40,14 @@ func (s *Server) SendMessageToClients() {
 }
 
 func (s *Server) Start() {
-	listener, err := net.Listen("tcp", address)
+	listener, err := net.Listen("tcp", os.Getenv("ADDRESS"))
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 		return
 	}
 	defer listener.Close()
 
-	fmt.Println("Server started, listening on", address)
+	fmt.Println("Server started, listening on", os.Getenv("ADDRESS"))
 
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
@@ -77,6 +77,11 @@ func (s *Server) Start() {
 }
 
 func main() {
+	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	s := NewServer()
 	s.Start()
 }
