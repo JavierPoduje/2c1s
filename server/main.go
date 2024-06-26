@@ -11,17 +11,37 @@ const (
 	address = "127.0.0.1:12345"
 )
 
+type Server struct {
+	clients []net.Conn
+}
+
 var (
-	clients    []net.Conn
 	clientsMtx sync.Mutex
 )
 
-func main() {
-	StartServer()
+func NewServer() *Server {
+	return &Server{
+		clients: []net.Conn{},
+	}
 }
 
-// StartServer starts the server and listens for clients
-func StartServer() {
+func (s *Server) SendMessageToClients() {
+	clientsMtx.Lock()
+	defer clientsMtx.Unlock()
+
+	message := []byte("Hello, clients!\n")
+
+	for _, conn := range s.clients {
+		_, err := conn.Write(message)
+		if err != nil {
+			fmt.Println("Error writing to client:", err)
+			conn.Close()
+			s.clients = removeClient(s.clients, conn)
+		}
+	}
+}
+
+func (s *Server) Start() {
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		fmt.Println("Error starting server:", err)
@@ -36,7 +56,7 @@ func StartServer() {
 
 	go func() {
 		for range ticker.C {
-			sendToClients()
+			s.SendMessageToClients()
 		}
 	}()
 
@@ -50,11 +70,18 @@ func StartServer() {
 		fmt.Println("New client connected:", conn.RemoteAddr().String())
 
 		clientsMtx.Lock()
-		clients = append(clients, conn)
+		s.clients = append(s.clients, conn)
 		clientsMtx.Unlock()
 
 		go handleClient(conn)
 	}
+
+}
+
+func main() {
+	s := NewServer()
+	s.Start()
+	//StartServer()
 }
 
 func handleClient(conn net.Conn) {
@@ -62,23 +89,6 @@ func handleClient(conn net.Conn) {
 
 	// Placeholder for any client-specific handling. could be useful later...
 	select {}
-}
-
-func sendToClients() {
-	clientsMtx.Lock()
-	defer clientsMtx.Unlock()
-
-	message := []byte("2 clients; 1 server")
-
-	for _, conn := range clients {
-		_, err := conn.Write(message)
-		if err != nil {
-			fmt.Println("Error writing to client:", err)
-			conn.Close()
-			// Remove the client from the slice
-			clients = removeClient(clients, conn)
-		}
-	}
 }
 
 func removeClient(clients []net.Conn, clientToRemove net.Conn) []net.Conn {
