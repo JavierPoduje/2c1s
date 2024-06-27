@@ -4,19 +4,19 @@ type Game struct {
 	Board [][]byte
 }
 
-func NewGame() *Game {
+func NewGame(width, height int) *Game {
 	return &Game{
-		Board: newBoard(),
+		Board: newBoard(width, height),
 	}
 }
 
-func newBoard() [][]byte {
+func newBoard(width, height int) [][]byte {
 	board := [][]byte{}
 	seed := seedCoords()
 
-	for y := 0; y < BoardWidth; y++ {
+	for y := 0; y < width; y++ {
 		row := []byte{}
-		for x := 0; x < BoardHeight; x++ {
+		for x := 0; x < height; x++ {
 			var currSeed []int
 			if len(seed) > 0 {
 				currSeed = seed[0]

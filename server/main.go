@@ -12,6 +12,11 @@ import (
 	"github.com/joho/godotenv"
 )
 
+const (
+	BoardWidth  = 10
+	BoardHeight = 10
+)
+
 type Server struct {
 	clients    []net.Conn
 	clientsMtx sync.Mutex
@@ -22,7 +27,7 @@ func NewServer() *Server {
 	return &Server{
 		clients:    []net.Conn{},
 		clientsMtx: sync.Mutex{},
-		game:       conways.NewGame(),
+		game:       conways.NewGame(BoardWidth, BoardHeight),
 	}
 }
 
@@ -30,7 +35,8 @@ func (s *Server) SendMessageToClients() {
 	s.clientsMtx.Lock()
 	defer s.clientsMtx.Unlock()
 
-	message := s.BoardToMessage()
+	boardAsMessage := s.BoardToMessage()
+	message := append([]byte{BoardWidth, BoardHeight}, boardAsMessage...)
 
 	for _, conn := range s.clients {
 		_, err := conn.Write(message)
