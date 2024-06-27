@@ -23,6 +23,7 @@ type Server struct {
 	game       *conways.Game
 }
 
+// message: [width, height, board]
 func NewServer() *Server {
 	return &Server{
 		clients:    []net.Conn{},

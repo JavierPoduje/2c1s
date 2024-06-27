@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -36,6 +37,27 @@ func StartClient() {
 			fmt.Println("Error reading from server:", err)
 			return
 		}
-		fmt.Println("Received:", buffer[:n])
+		printMessage(buffer[:n])
 	}
+}
+
+func printMessage(message []byte) {
+	width := int(message[0])
+	height := int(message[1])
+	board := message[2:]
+
+	str := strings.Builder{}
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			if board[y*width+x] == 0 {
+				str.WriteString("-")
+			} else {
+				str.WriteString("X")
+			}
+		}
+		str.WriteString("\n")
+	}
+
+	fmt.Println("mirame baby...")
+	fmt.Println(str.String())
 }
