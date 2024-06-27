@@ -36,6 +36,6 @@ func StartClient() {
 			fmt.Println("Error reading from server:", err)
 			return
 		}
-		fmt.Println("Received:", string(buffer[:n]))
+		fmt.Println("Received:", buffer[:n])
 	}
 }

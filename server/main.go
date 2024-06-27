@@ -8,18 +8,21 @@ import (
 	"sync"
 	"time"
 
+	"github.com/javierpoduje/2c1s/server/conways"
 	"github.com/joho/godotenv"
 )
 
 type Server struct {
 	clients    []net.Conn
 	clientsMtx sync.Mutex
+	game       *conways.Game
 }
 
 func NewServer() *Server {
 	return &Server{
 		clients:    []net.Conn{},
 		clientsMtx: sync.Mutex{},
+		game:       conways.NewGame(),
 	}
 }
 
@@ -27,7 +30,7 @@ func (s *Server) SendMessageToClients() {
 	s.clientsMtx.Lock()
 	defer s.clientsMtx.Unlock()
 
-	message := []byte("Hello, clients!\n")
+	message := s.BoardToMessage()
 
 	for _, conn := range s.clients {
 		_, err := conn.Write(message)
@@ -74,6 +77,14 @@ func (s *Server) Start() {
 		go handleClient(conn)
 	}
 
+}
+
+func (s *Server) BoardToMessage() []byte {
+	message := []byte{}
+	for _, row := range s.game.Board {
+		message = append(message, row...)
+	}
+	return message
 }
 
 func main() {
