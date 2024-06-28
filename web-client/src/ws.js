@@ -1,5 +1,14 @@
+require("dotenv").config({
+	path: `${__dirname}/../.env`,
+});
+
+/** @type {number} */
+const WEB_PORT = parseInt(process.env.WEB_PORT || "8080");
+/** @type {string} */
+const SERVER_HOST = process.env.SERVER_HOST || "127.0.0.1";
+
 /** @type {WebSocket} */
-const ws = new WebSocket("ws://127.0.0.1:8080");
+const ws = new WebSocket(`ws://${SERVER_HOST}:${WEB_PORT}`);
 
 ws.onopen = () => {
 	console.log("Connected to server");

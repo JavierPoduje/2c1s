@@ -21,14 +21,15 @@ func main() {
 
 // StartClient starts the client and listens for messages from the server
 func StartClient() {
-	conn, err := net.Dial("tcp", os.Getenv("ADDRESS"))
+	addr := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
+	conn, err := net.Dial("tcp", addr)
 	if err != nil {
 		fmt.Println("Error connecting to server:", err)
 		return
 	}
 	defer conn.Close()
 
-	fmt.Println("Connected to server at", os.Getenv("ADDRESS"))
+	fmt.Println("Connected to server at", addr)
 
 	buffer := make([]byte, 1024)
 	for {

@@ -50,14 +50,15 @@ func (s *Server) SendMessageToClients() {
 }
 
 func (s *Server) Start() {
-	listener, err := net.Listen("tcp", os.Getenv("ADDRESS"))
+	addr := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
+	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 		return
 	}
 	defer listener.Close()
 
-	fmt.Println("Server started, listening on", os.Getenv("ADDRESS"))
+	fmt.Println("Server started, listening on", addr)
 
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()

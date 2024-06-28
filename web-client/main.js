@@ -60,5 +60,5 @@ wss.on("connection", (ws) => {
 
 // Start the server
 server.listen(WEB_PORT, () => {
-	console.log(`Server is listening on http://localhost:${WEB_PORT}`);
+	console.log(`Server is listening on http://${SERVER_HOST}:${WEB_PORT}`);
 });
