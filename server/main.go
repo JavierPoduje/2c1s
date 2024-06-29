@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	BoardWidth  = 4
-	BoardHeight = 4
+	BoardWidth  = 13
+	BoardHeight = 13
 )
 
 func main() {

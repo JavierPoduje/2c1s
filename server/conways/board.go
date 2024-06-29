@@ -63,39 +63,31 @@ func (b Board) Height() int {
 }
 
 func newBoard(width, height int) *Board {
-	board := Board{}
-	seed := seedCoords()
-
-	for y := 0; y < width; y++ {
-		row := []byte{}
-		for x := 0; x < height; x++ {
-			var currSeed []int
-			if len(seed) > 0 {
-				currSeed = seed[0]
-			}
-
-			if len(currSeed) > 0 && currSeed[0] == y && currSeed[1] == x {
-				row = append(row, byte(1))
-				seed = seed[1:]
-			} else {
-				row = append(row, byte(0))
-			}
-
-		}
-		board = append(board, row)
-	}
-
+	board := blankBoard(width, height)
+	seed := diamondRing(width, height)
+	placeSeed(&board, seed)
 	return &board
 }
 
-func seedCoords() [][]int {
-	return [][]int{
-		{0, 0},
-		{1, 1},
-		{1, 2},
-		{2, 1},
-		{2, 2},
-		{3, 3},
+func blankBoard(width, height int) Board {
+	board := Board{}
+	for y := 0; y < height; y++ {
+		row := []byte{}
+		for x := 0; x < width; x++ {
+			row = append(row, byte(0))
+		}
+		board = append(board, row)
+	}
+	return board
+}
+
+func placeSeed(b *Board, seed [][]int) {
+	for y, row := range seed {
+		for x, cell := range row {
+			if cell == 1 {
+				(*b)[y][x] = byte(1)
+			}
+		}
 	}
 }
 
