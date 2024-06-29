@@ -1,24 +1,41 @@
 package conways
 
 import (
+	"fmt"
 	"strings"
 )
 
 type Board [][]byte
 
-func (b Board) String_backup() string {
-	boardAsSTring := strings.Builder{}
+func (b Board) String() string {
+	boardAsString := strings.Builder{}
+	boardAsString.WriteString("\n")
 	for _, row := range b {
-		for _, cell := range row {
-			if cell == 0 {
-				boardAsSTring.WriteString("-")
+		for cellIdx, cell := range row {
+			var char string
+			if cell == byte(0) {
+				char = "0"
 			} else {
-				boardAsSTring.WriteString("X")
+				char = "1"
 			}
+
+			if cellIdx != len(row)-1 {
+				char = fmt.Sprintf("%v, ", char)
+			}
+
+			boardAsString.WriteString(char)
 		}
-		boardAsSTring.WriteString("\n")
+		boardAsString.WriteString("\n")
 	}
-	return boardAsSTring.String()
+	return boardAsString.String()
+}
+
+func (b Board) Flatten() []byte {
+	message := []byte{}
+	for _, row := range b {
+		message = append(message, row...)
+	}
+	return message
 }
 
 func (b Board) alive(y, x int) bool {

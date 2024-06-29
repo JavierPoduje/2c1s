@@ -49,7 +49,7 @@ func (s *Server) SendMessageToClients() {
 		s.firstFrameShown = true
 	}
 
-	boardAsMessage := s.BoardToMessage()
+	boardAsMessage := s.game.Board.Flatten()
 	message := append([]byte{BoardWidth, BoardHeight}, boardAsMessage...)
 
 	for _, conn := range s.clients {
