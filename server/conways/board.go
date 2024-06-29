@@ -54,6 +54,14 @@ func (b Board) cols() int {
 	return len(b[0])
 }
 
+func (b Board) Width() int {
+	return len(b[0])
+}
+
+func (b Board) Height() int {
+	return len(b)
+}
+
 func newBoard(width, height int) *Board {
 	board := Board{}
 	seed := seedCoords()
