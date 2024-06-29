@@ -21,6 +21,7 @@ type Server struct {
 	clients    []net.Conn
 	clientsMtx sync.Mutex
 	game       *conways.Game
+	firstFrameShown bool
 }
 
 // message: [width, height, board]
@@ -29,12 +30,19 @@ func NewServer() *Server {
 		clients:    []net.Conn{},
 		clientsMtx: sync.Mutex{},
 		game:       conways.NewGame(BoardWidth, BoardHeight),
+		firstFrameShown: false,
 	}
 }
 
 func (s *Server) SendMessageToClients() {
 	s.clientsMtx.Lock()
 	defer s.clientsMtx.Unlock()
+
+	if s.firstFrameShown {
+		s.game.Update()
+	} else {
+		s.firstFrameShown = true
+	}
 
 	boardAsMessage := s.BoardToMessage()
 	message := append([]byte{BoardWidth, BoardHeight}, boardAsMessage...)
