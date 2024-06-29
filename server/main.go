@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/javierpoduje/2c1s/server/server"
+	"github.com/javierpoduje/2c1s/server/sender"
 	"github.com/joho/godotenv"
 )
 
@@ -18,6 +18,6 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	s := server.NewServer(BoardWidth, BoardHeight)
+	s := sender.NewServer(BoardWidth, BoardHeight)
 	s.Start()
 }
