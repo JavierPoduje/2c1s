@@ -3,16 +3,21 @@ package app
 import (
 	"fmt"
 	"net"
-	"strings"
+	"os"
+
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/javierpoduje/2c1s/cli-client/model"
 )
 
 type Client struct {
-	addr string
+	addr       string
+	teaProgram *tea.Program
 }
 
 func NewClient(addr string) *Client {
 	return &Client{
-		addr: addr,
+		addr:       addr,
+		teaProgram: nil,
 	}
 }
 
@@ -24,6 +29,16 @@ func (c *Client) Start() {
 	}
 	defer conn.Close()
 
+	go func() {
+		p := tea.NewProgram(model.NewModel(), tea.WithAltScreen())
+		c.teaProgram = p
+
+		if _, err := p.Run(); err != nil {
+			fmt.Printf("Error starting program: %v", err)
+			os.Exit(1)
+		}
+	}()
+
 	fmt.Println("Connected to server at", c.addr)
 
 	buffer := make([]byte, 1024)
@@ -33,27 +48,7 @@ func (c *Client) Start() {
 			fmt.Println("Error reading from server:", err)
 			return
 		}
-		printMessage(buffer[:n])
+
+		c.teaProgram.Send(model.ServerMsg(buffer[:n]))
 	}
-}
-
-func printMessage(message []byte) {
-	width := int(message[0])
-	height := int(message[1])
-	board := message[2:]
-
-	str := strings.Builder{}
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			if board[y*width+x] == 0 {
-				str.WriteString("- ")
-			} else {
-				str.WriteString("X ")
-			}
-		}
-		str.WriteString("\n")
-	}
-
-	fmt.Printf("(%v, %v)\n", width, height)
-	fmt.Println(str.String())
 }
