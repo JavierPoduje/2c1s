@@ -4,17 +4,22 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type Model struct {
-	msg ServerMsg
+	msg    ServerMsg
+	height int
+	width  int
 }
 
 type ServerMsg []byte
 
 func NewModel() Model {
 	return Model{
-		msg: ServerMsg{},
+		msg:    ServerMsg{},
+		height: 0,
+		width:  0,
 	}
 }
 
@@ -22,8 +27,14 @@ func (m Model) Init() tea.Cmd {
 	return nil
 }
 
+func (m *Model) HandleWindowResize(msg tea.WindowSizeMsg) {
+	m.width, m.height = msg.Width, msg.Height
+}
+
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.HandleWindowResize(msg)
 	case ServerMsg:
 		m.msg = msg
 	case tea.KeyMsg:
@@ -57,5 +68,9 @@ func (m Model) View() string {
 		str.WriteString("\n")
 	}
 
-	return str.String()
+	return lipgloss.Place(
+		m.width, m.height,
+		lipgloss.Center, lipgloss.Center,
+		str.String(),
+	)
 }
