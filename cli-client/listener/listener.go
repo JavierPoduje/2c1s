@@ -6,18 +6,21 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/javierpoduje/2c1s/cli-client/logger"
 	"github.com/javierpoduje/2c1s/cli-client/model"
 )
 
 type Listener struct {
 	addr       string
 	teaProgram *tea.Program
+	logger     *logger.Logger
 }
 
 func NewClient(addr string) *Listener {
 	return &Listener{
 		addr:       addr,
 		teaProgram: nil,
+		logger:     logger.NewLogger("debug.log"),
 	}
 }
 
@@ -39,7 +42,7 @@ func (c *Listener) Start() {
 		}
 	}()
 
-	//fmt.Println("Connected to server at", c.addr)
+	c.logger.Log(fmt.Sprintf("Connected to server at %v", c.addr))
 
 	buffer := make([]byte, 1024)
 	for {
