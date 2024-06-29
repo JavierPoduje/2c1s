@@ -11,7 +11,7 @@ type testContext struct {
 
 func (c *testContext) beforeEach() {
 	game := Game{
-		Board: [][]byte{
+		Board: &Board{
 			{0, 0, 0, 0, 0, 0},
 			{0, 0, 1, 1, 0, 1},
 			{0, 1, 0, 0, 1, 0},
@@ -43,7 +43,7 @@ func TestGame_getNeighbours(t *testing.T) {
 
 	t.Run("vertical/horizontal directions", testCase(func(t *testing.T, c *testContext) {
 		game := c.game
-		game.Board = [][]byte{
+		game.Board = &Board{
 			{0, 1, 0},
 			{1, 0, 1},
 			{0, 1, 0},
@@ -57,7 +57,7 @@ func TestGame_getNeighbours(t *testing.T) {
 
 	t.Run("diagonal directions", testCase(func(t *testing.T, c *testContext) {
 		game := c.game
-		game.Board = [][]byte{
+		game.Board = &Board{
 			{1, 0, 1},
 			{0, 0, 0},
 			{1, 0, 1},
@@ -66,6 +66,24 @@ func TestGame_getNeighbours(t *testing.T) {
 
 		if neighbours != 4 {
 			t.Errorf("Expected %v but got %v", 4, neighbours)
+		}
+	}))
+
+}
+
+func TestGame_getNeighboursEdgeCases(t *testing.T) {
+	t.Run("count neighbours properly", testCase(func(t *testing.T, c *testContext) {
+		game := c.game
+		game.Board = &Board{
+			{0, 1, 1, 0, 0},
+			{0, 1, 0, 0, 0},
+			{0, 1, 1, 1, 0},
+			{0, 0, 0, 0, 0},
+		}
+		neighbours := game.getNeighbours(0, 3)
+
+		if neighbours != 1 {
+			t.Errorf("Expected %v but got %v", 1, neighbours)
 		}
 	}))
 }
@@ -85,29 +103,14 @@ func TestGame_getNextCellState(t *testing.T) {
 		}
 	}))
 
-	t.Run("two or three lives", testCase(func(t *testing.T, c *testContext) {
+	t.Run("if alive; two or three lives", testCase(func(t *testing.T, c *testContext) {
 		game := c.game
 		state := game.getNextCellState(1, 1)
-
-		if state != byte(1) {
-			t.Errorf("Expected %v but got %v", byte(1), state)
+		if state != byte(0) {
+			t.Errorf("Expected %v but got %v", byte(0), state)
 		}
 
-		state = game.getNextCellState(1, 4)
-		if state != byte(1) {
-			t.Errorf("Expected %v but got %v", byte(1), state)
-		}
-	}))
-
-	t.Run("two or three lives", testCase(func(t *testing.T, c *testContext) {
-		game := c.game
-		state := game.getNextCellState(1, 1)
-
-		if state != byte(1) {
-			t.Errorf("Expected %v but got %v", byte(1), state)
-		}
-
-		state = game.getNextCellState(1, 4)
+		state = game.getNextCellState(1, 3)
 		if state != byte(1) {
 			t.Errorf("Expected %v but got %v", byte(1), state)
 		}
@@ -126,7 +129,7 @@ func TestGame_getNextCellState(t *testing.T) {
 func TestGame_Update(t *testing.T) {
 	t.Run("The board is updated correctly; first figure", testCase(func(t *testing.T, c *testContext) {
 		game := c.game
-		game.Board = [][]byte{
+		game.Board = &Board{
 			{0, 0, 1, 0, 0},
 			{0, 1, 1, 0, 0},
 			{0, 0, 1, 1, 0},
@@ -134,42 +137,43 @@ func TestGame_Update(t *testing.T) {
 		}
 
 		game.Update(4, 5)
-		expected := [][]byte{
+		expected := &Board{
 			{0, 1, 1, 0, 0},
 			{0, 1, 0, 0, 0},
 			{0, 1, 1, 1, 0},
 			{0, 0, 0, 0, 0},
 		}
-		if reflect.DeepEqual(game.Board, expected) {
+
+		if !reflect.DeepEqual(game.Board, expected) {
 			t.Errorf("Expected %v but got %v", expected, game.Board)
 		}
 
 		game.Update(4, 5)
-		expected = [][]byte{
+		expected = &Board{
 			{0, 1, 1, 0, 0},
 			{1, 0, 0, 1, 0},
 			{0, 1, 1, 0, 0},
 			{0, 0, 1, 0, 0},
 		}
-		if reflect.DeepEqual(game.Board, expected) {
+		if !reflect.DeepEqual(game.Board, expected) {
 			t.Errorf("Expected %v but got %v", expected, game.Board)
 		}
 
 		game.Update(4, 5)
-		expected = [][]byte{
+		expected = &Board{
 			{0, 1, 1, 0, 0},
 			{1, 0, 0, 1, 0},
 			{0, 1, 1, 1, 0},
 			{0, 1, 1, 0, 0},
 		}
-		if reflect.DeepEqual(game.Board, expected) {
+		if !reflect.DeepEqual(game.Board, expected) {
 			t.Errorf("Expected %v but got %v", expected, game.Board)
 		}
 	}))
 
 	t.Run("The board is updated correctly; second figure (static)", testCase(func(t *testing.T, c *testContext) {
 		game := c.game
-		game.Board = [][]byte{
+		game.Board = &Board{
 			{0, 1, 0},
 			{1, 0, 1},
 			{1, 0, 1},
@@ -177,56 +181,53 @@ func TestGame_Update(t *testing.T) {
 		}
 
 		game.Update(4, 3)
-		expected := [][]byte{
+		expected := &Board{
 			{0, 1, 0},
 			{1, 0, 1},
 			{1, 0, 1},
 			{0, 1, 0},
 		}
-		if reflect.DeepEqual(game.Board, expected) {
+		if !reflect.DeepEqual(game.Board, expected) {
 			t.Errorf("Expected %v but got %v", expected, game.Board)
 		}
 	}))
 
-	t.Run("The board is updated correctly; third figure (hardcore, baby)", testCase(func(t *testing.T, c *testContext) {
+}
+
+func TestGame_UpdateThirdFigure(t *testing.T) {
+	t.Run("The board is updated correctly", testCase(func(t *testing.T, c *testContext) {
 		game := c.game
-		game.Board = [][]byte{
-			{0, 1, 0, 0},
-			{1, 0, 0, 0},
-			{0, 0, 0, 1},
-			{0, 0, 1, 0},
-		}
-
-		game.Update(4, 4)
-		expected := [][]byte{
+		game.Board = &Board{
 			{1, 0, 0, 0},
 			{0, 1, 1, 0},
-			{0, 1, 1, 1},
+			{0, 1, 1, 0},
 			{0, 0, 0, 1},
 		}
-		if reflect.DeepEqual(game.Board, expected) {
+		game.Update(4, 4)
+		expected := &Board{
+			{0, 1, 0, 0},
+			{1, 0, 1, 0},
+			{0, 1, 0, 1},
+			{0, 0, 1, 0},
+		}
+		if !reflect.DeepEqual(game.Board, expected) {
 			t.Errorf("Expected %v but got %v", expected, game.Board)
 		}
 
-		game.Update(4, 4)
-		expected = [][]byte{
-			{0, 0, 1, 0},
+		game.Board = &Board{
 			{0, 0, 0, 1},
+			{0, 1, 1, 0},
+			{0, 1, 1, 0},
 			{1, 0, 0, 0},
+		}
+		game.Update(4, 4)
+		expected = &Board{
+			{0, 0, 1, 0},
+			{0, 1, 0, 1},
+			{1, 0, 1, 0},
 			{0, 1, 0, 0},
 		}
-		if reflect.DeepEqual(game.Board, expected) {
-			t.Errorf("Expected %v but got %v", expected, game.Board)
-		}
-
-		game.Update(4, 4)
-		expected = [][]byte{
-			{0, 0, 0, 1},
-			{0, 1, 1, 0},
-			{0, 1, 1, 0},
-			{1, 0, 0, 0},
-		}
-		if reflect.DeepEqual(game.Board, expected) {
+		if !reflect.DeepEqual(game.Board, expected) {
 			t.Errorf("Expected %v but got %v", expected, game.Board)
 		}
 	}))

@@ -13,23 +13,23 @@ import (
 )
 
 const (
-	BoardWidth  = 10
-	BoardHeight = 10
+	BoardWidth  = 4
+	BoardHeight = 4
 )
 
 type Server struct {
-	clients    []net.Conn
-	clientsMtx sync.Mutex
-	game       *conways.Game
+	clients         []net.Conn
+	clientsMtx      sync.Mutex
+	game            *conways.Game
 	firstFrameShown bool
 }
 
 // message: [width, height, board]
 func NewServer() *Server {
 	return &Server{
-		clients:    []net.Conn{},
-		clientsMtx: sync.Mutex{},
-		game:       conways.NewGame(BoardWidth, BoardHeight),
+		clients:         []net.Conn{},
+		clientsMtx:      sync.Mutex{},
+		game:            conways.NewGame(BoardWidth, BoardHeight),
 		firstFrameShown: false,
 	}
 }
@@ -38,8 +38,13 @@ func (s *Server) SendMessageToClients() {
 	s.clientsMtx.Lock()
 	defer s.clientsMtx.Unlock()
 
+	// don't do anything if there are no clients connected
+	if len(s.clients) == 0 {
+		return
+	}
+
 	if s.firstFrameShown {
-		s.game.Update()
+		s.game.Update(BoardHeight, BoardWidth)
 	} else {
 		s.firstFrameShown = true
 	}
@@ -97,7 +102,7 @@ func (s *Server) Start() {
 
 func (s *Server) BoardToMessage() []byte {
 	message := []byte{}
-	for _, row := range s.game.Board {
+	for _, row := range *s.game.Board {
 		message = append(message, row...)
 	}
 	return message

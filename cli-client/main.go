@@ -59,6 +59,6 @@ func printMessage(message []byte) {
 		str.WriteString("\n")
 	}
 
-	fmt.Println("mirame baby...")
+	fmt.Printf("(%v, %v)\n", width, height)
 	fmt.Println(str.String())
 }
