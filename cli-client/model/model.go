@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -38,8 +37,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
 	if len(m.msg) == 0 {
-		msg := fmt.Sprintf("m.msg: %v\n", m.msg)
-		return msg
+		return ""
 	}
 
 	width := int(m.msg[0])

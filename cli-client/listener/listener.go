@@ -1,4 +1,4 @@
-package app
+package listener
 
 import (
 	"fmt"
@@ -9,19 +9,19 @@ import (
 	"github.com/javierpoduje/2c1s/cli-client/model"
 )
 
-type Client struct {
+type Listener struct {
 	addr       string
 	teaProgram *tea.Program
 }
 
-func NewClient(addr string) *Client {
-	return &Client{
+func NewClient(addr string) *Listener {
+	return &Listener{
 		addr:       addr,
 		teaProgram: nil,
 	}
 }
 
-func (c *Client) Start() {
+func (c *Listener) Start() {
 	conn, err := net.Dial("tcp", c.addr)
 	if err != nil {
 		fmt.Println("Error connecting to server:", err)
@@ -39,7 +39,7 @@ func (c *Client) Start() {
 		}
 	}()
 
-	fmt.Println("Connected to server at", c.addr)
+	//fmt.Println("Connected to server at", c.addr)
 
 	buffer := make([]byte, 1024)
 	for {

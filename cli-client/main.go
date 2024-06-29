@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/javierpoduje/2c1s/cli-client/app"
+	"github.com/javierpoduje/2c1s/cli-client/listener"
 	"github.com/joho/godotenv"
 )
 
@@ -16,6 +16,6 @@ func main() {
 	}
 
 	addr := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
-	c := app.NewClient(addr)
+	c := listener.NewClient(addr)
 	c.Start()
 }
