@@ -10,7 +10,7 @@ import (
 	"github.com/javierpoduje/2c1s/server/conways"
 )
 
-const TickInterval = 1 * time.Second
+const TickInterval = (1 * time.Second) / 3
 
 type Server struct {
 	clients         []net.Conn
