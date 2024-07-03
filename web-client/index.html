@@ -4,12 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Web Client</title>
+    <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+    <link rel="stylesheet" href="src/index.css" />
+    <link rel="icon" href="conways-icon.png" type="image/png" />
   </head>
   <body>
     <h1>Web Client</h1>
     <div id="messages"></div>
 
-    <!--Import the src/ws.js file-->
+    <div class="board-container"></div>
+
     <script type="module" src="src/ws.js"></script>
   </body>
 </html>

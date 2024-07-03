@@ -1,0 +1,5 @@
+.board-container {
+  border: 1px solid red;
+  height: 1rem;
+  width: 1rem;
+}

@@ -4,7 +4,7 @@
   "description": "Web Client for TCP Server",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "node main.js && node src/ws.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
