@@ -1,7 +1,7 @@
 :root {
   --cell-size: 2rem;
   --green: #40a02b;
-  --red: #e78284;
+  --black: #494D64;
 }
 
 body {
@@ -33,5 +33,5 @@ body {
 }
 
 .cell-dead {
-  background-color: var(--red);
+  background-color: var(--black);
 }
