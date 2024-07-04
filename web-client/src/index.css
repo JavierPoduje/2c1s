@@ -1,5 +1,37 @@
-.board-container {
-  border: 1px solid red;
-  height: 1rem;
-  width: 1rem;
+:root {
+  --cell-size: 2rem;
+  --green: #40a02b;
+  --red: #e78284;
+}
+
+body {
+  align-items: center;
+  background-color: #24273a;
+  display: flex;
+  height: 96vh;
+  justify-content: center;
+  width: 97vw;
+}
+
+.board {
+  background-color: gray;
+  display: grid;
+  grid-template-columns: repeat(13, var(--cell-size));
+  grid-template-rows: repeat(13, var(--cell-size));
+  height: calc(13 * var(--cell-size));
+  width: calc(13 * var(--cell-size));
+}
+
+.cell {
+  height: var(--cell-size);
+  width: var(--cell-size);
+  z-index: 10;
+}
+
+.cell-alive {
+  background-color: var(--green);
+}
+
+.cell-dead {
+  background-color: var(--red);
 }

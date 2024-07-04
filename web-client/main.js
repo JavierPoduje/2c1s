@@ -32,9 +32,6 @@ wss.on("connection", (ws) => {
 	});
 
 	tcpClient.on("data", (data) => {
-    // const bytes = new Uint8Array(data);
-    // console.log("Received from TCP server:", data);
-		// ws.send(bytes);
 		ws.send(data);
 	});
 
