@@ -69,6 +69,32 @@ func newBoard(width, height int) *Board {
 	return &board
 }
 
+func (b *Board) UpdateBoardDimensions(height, width int) *Board {
+	newBoard := blankBoard(width, height)
+
+	boardHeight := b.Height()
+	boardWidth := b.Width()
+
+	for y := 0; y < height; y++ {
+		if y >= boardHeight {
+			break
+		}
+
+		for x := 0; x < width; x++ {
+			if x >= boardWidth {
+				newBoard[y][x] = byte(0)
+				continue
+			}
+
+			// take the value of the current board
+			value := (*b)[y][x]
+			newBoard[y][x] = value
+		}
+	}
+
+	return &newBoard
+}
+
 func blankBoard(width, height int) Board {
 	board := Board{}
 	for y := 0; y < height; y++ {

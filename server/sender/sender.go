@@ -13,23 +13,21 @@ import (
 const TickInterval = (1 * time.Second) / 3
 
 type Server struct {
-	clients         []net.Conn
-	clientsMtx      sync.Mutex
-	game            *conways.Game
-	firstFrameShown bool
-	width           int
-	height          int
+	clients    []net.Conn
+	clientsMtx sync.Mutex
+	game       *conways.Game
+	width      int
+	height     int
 }
 
 // message: [width, height, board]
 func NewServer(width, height int) *Server {
 	return &Server{
-		clients:         []net.Conn{},
-		clientsMtx:      sync.Mutex{},
-		game:            conways.NewGame(width, height),
-		firstFrameShown: false,
-		width:           width,
-		height:          height,
+		clients:    []net.Conn{},
+		clientsMtx: sync.Mutex{},
+		game:       conways.NewGame(width, height),
+		width:      width,
+		height:     height,
 	}
 }
 
@@ -47,9 +45,12 @@ func (s *Server) Start() {
 	ticker := time.NewTicker(TickInterval)
 	defer ticker.Stop()
 
+	framNum := 0
+
 	go func() {
 		for range ticker.C {
-			s.SendMessageToClients()
+			s.SendMessageToClients(framNum)
+			framNum++
 		}
 	}()
 
@@ -73,7 +74,7 @@ func (s *Server) Start() {
 }
 
 // Probably, this function should receive width and hegiht as parameters later...
-func (s *Server) SendMessageToClients() {
+func (s *Server) SendMessageToClients(frameNum int) {
 	s.clientsMtx.Lock()
 	defer s.clientsMtx.Unlock()
 
@@ -82,10 +83,13 @@ func (s *Server) SendMessageToClients() {
 		return
 	}
 
-	if s.firstFrameShown {
-		s.game.Update(s.game.Board.Height(), s.game.Board.Width())
+	// TODO: the width and the height should be updated in the "admin", not here
+	if frameNum == 0 {
+		// don't do nothing
+	} else if frameNum == 15 {
+		s.game.Update(s.game.Board.Height()+2, s.game.Board.Width()+2)
 	} else {
-		s.firstFrameShown = true
+		s.game.Update(s.game.Board.Height(), s.game.Board.Width())
 	}
 
 	for _, conn := range s.clients {

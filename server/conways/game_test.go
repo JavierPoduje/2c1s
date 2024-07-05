@@ -191,7 +191,6 @@ func TestGame_Update(t *testing.T) {
 			t.Errorf("Expected %v but got %v", expected, game.Board)
 		}
 	}))
-
 }
 
 func TestGame_UpdateThirdFigure(t *testing.T) {
@@ -229,6 +228,242 @@ func TestGame_UpdateThirdFigure(t *testing.T) {
 		}
 		if !reflect.DeepEqual(game.Board, expected) {
 			t.Errorf("Expected %v but got %v", expected, game.Board)
+		}
+	}))
+}
+
+func TestGame_UpdateBoardDimensions(t *testing.T) {
+	t.Run("increse the width of the board", testCase(func(t *testing.T, c *testContext) {
+		game := Game{
+			Board: &Board{
+				{0, 0, 0, 0, 0, 0},
+				{0, 1, 1, 1, 1, 0},
+				{1, 0, 0, 0, 0, 1},
+				{1, 1, 0, 0, 1, 1},
+			},
+		}
+
+		expected := &Board{
+			{0, 0, 1, 1, 0, 0},
+			{0, 1, 1, 1, 1, 0},
+			{1, 0, 0, 0, 0, 1},
+			{1, 1, 0, 0, 1, 1},
+		}
+
+		game.Update(4, 6)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+
+		expected = &Board{
+			{0, 1, 0, 0, 1, 0, 0},
+			{0, 1, 0, 0, 1, 0, 0},
+			{1, 0, 0, 0, 0, 1, 0},
+			{1, 1, 0, 0, 1, 1, 0},
+		}
+
+		game.Update(4, 7)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+	}))
+
+	t.Run("increse the height of the board", testCase(func(t *testing.T, c *testContext) {
+		game := Game{
+			Board: &Board{
+				{0, 0, 0, 0, 0, 0},
+				{0, 1, 1, 1, 1, 0},
+				{1, 0, 0, 0, 0, 1},
+				{1, 1, 0, 0, 1, 1},
+			},
+		}
+
+		expected := &Board{
+			{0, 0, 1, 1, 0, 0},
+			{0, 1, 1, 1, 1, 0},
+			{1, 0, 0, 0, 0, 1},
+			{1, 1, 0, 0, 1, 1},
+		}
+
+		game.Update(4, 6)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+
+		expected = &Board{
+			{0, 1, 0, 0, 1, 0},
+			{0, 1, 0, 0, 1, 0},
+			{1, 0, 0, 0, 0, 1},
+			{1, 1, 0, 0, 1, 1},
+			{0, 0, 0, 0, 0, 0},
+		}
+
+		game.Update(5, 6)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+	}))
+
+	t.Run("increse the height and the width of the board", testCase(func(t *testing.T, c *testContext) {
+		game := Game{
+			Board: &Board{
+				{0, 0, 0, 0, 0, 0},
+				{0, 1, 1, 1, 1, 0},
+				{1, 0, 0, 0, 0, 1},
+				{1, 1, 0, 0, 1, 1},
+			},
+		}
+
+		expected := &Board{
+			{0, 0, 1, 1, 0, 0},
+			{0, 1, 1, 1, 1, 0},
+			{1, 0, 0, 0, 0, 1},
+			{1, 1, 0, 0, 1, 1},
+		}
+
+		game.Update(4, 6)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+
+		expected = &Board{
+			{0, 1, 0, 0, 1, 0, 0, 0},
+			{0, 1, 0, 0, 1, 0, 0, 0},
+			{1, 0, 0, 0, 0, 1, 0, 0},
+			{1, 1, 0, 0, 1, 1, 0, 0},
+			{0, 0, 0, 0, 0, 0, 0, 0},
+		}
+
+		game.Update(5, 8)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+		if game.Board.rows() != 5 {
+			t.Errorf("Expected %v but got %v\n", 5, game.Board.rows())
+		}
+		if game.Board.cols() != 8 {
+			t.Errorf("Expected %v but got %v\n", 8, game.Board.cols())
+		}
+	}))
+
+	t.Run("decrease the height of the board", testCase(func(t *testing.T, c *testContext) {
+		game := Game{
+			Board: &Board{
+				{0, 0, 0, 0, 0, 0},
+				{0, 1, 1, 1, 1, 0},
+				{1, 0, 0, 0, 0, 1},
+				{1, 1, 0, 0, 1, 1},
+			},
+		}
+
+		expected := &Board{
+			{0, 0, 1, 1, 0, 0},
+			{0, 1, 1, 1, 1, 0},
+			{1, 0, 0, 0, 0, 1},
+			{1, 1, 0, 0, 1, 1},
+		}
+
+		game.Update(4, 6)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+
+		expected = &Board{
+			{0, 1, 0, 0, 1, 0},
+			{0, 1, 0, 0, 1, 0},
+			{0, 1, 1, 1, 1, 0},
+		}
+
+		game.Update(3, 6)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+		if game.Board.rows() != 3 {
+			t.Errorf("Expected %v but got %v\n", 3, game.Board.rows())
+		}
+		if game.Board.cols() != 6 {
+			t.Errorf("Expected %v but got %v\n", 6, game.Board.cols())
+		}
+	}))
+
+	t.Run("decrease the width of the board", testCase(func(t *testing.T, c *testContext) {
+		game := Game{
+			Board: &Board{
+				{0, 0, 0, 0, 0, 0},
+				{0, 1, 1, 1, 1, 0},
+				{1, 0, 0, 0, 0, 1},
+				{1, 1, 0, 0, 1, 1},
+			},
+		}
+
+		expected := &Board{
+			{0, 0, 1, 1, 0, 0},
+			{0, 1, 1, 1, 1, 0},
+			{1, 0, 0, 0, 0, 1},
+			{1, 1, 0, 0, 1, 1},
+		}
+
+		game.Update(4, 6)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+
+		expected = &Board{
+			{0, 1, 0, 0, 1},
+			{0, 1, 0, 0, 1},
+			{1, 0, 0, 0, 1},
+			{1, 1, 0, 0, 0},
+		}
+
+		game.Update(4, 5)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+		if game.Board.rows() != 4 {
+			t.Errorf("Expected %v but got %v\n", 4, game.Board.rows())
+		}
+		if game.Board.cols() != 5 {
+			t.Errorf("Expected %v but got %v\n", 5, game.Board.cols())
+		}
+	}))
+
+	t.Run("decrease the width and the height of the board", testCase(func(t *testing.T, c *testContext) {
+		game := Game{
+			Board: &Board{
+				{0, 0, 0, 0, 0, 0},
+				{0, 1, 1, 1, 1, 0},
+				{1, 0, 0, 0, 0, 1},
+				{1, 1, 0, 0, 1, 1},
+			},
+		}
+
+		expected := &Board{
+			{0, 0, 1, 1, 0, 0},
+			{0, 1, 1, 1, 1, 0},
+			{1, 0, 0, 0, 0, 1},
+			{1, 1, 0, 0, 1, 1},
+		}
+
+		game.Update(4, 6)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+
+		expected = &Board{
+			{0, 1, 0, 0, 1},
+			{0, 1, 0, 0, 1},
+			{0, 1, 1, 1, 0},
+		}
+
+		game.Update(3, 5)
+		if !reflect.DeepEqual(game.Board, expected) {
+			t.Errorf("Expected %v but got %v\n", expected, game.Board)
+		}
+		if game.Board.rows() != 3 {
+			t.Errorf("Expected %v but got %v\n", 3, game.Board.rows())
+		}
+		if game.Board.cols() != 5 {
+			t.Errorf("Expected %v but got %v\n", 5, game.Board.cols())
 		}
 	}))
 }

@@ -12,6 +12,12 @@ func NewGame(width, height int) *Game {
 
 func (g *Game) Update(height, width int) {
 	newBoard := Board{}
+
+	// update if the board has changed
+	if g.Board.Height() != height || g.Board.Width() != width {
+		g.Board = g.Board.UpdateBoardDimensions(height, width)
+	}
+
 	for y := 0; y < height; y++ {
 		row := []byte{}
 		for x := 0; x < width; x++ {
