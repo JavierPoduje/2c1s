@@ -7,7 +7,10 @@ import (
 	"sync"
 	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/javierpoduje/2c1s/cli-client/logger"
 	"github.com/javierpoduje/2c1s/server/conways"
+	"github.com/javierpoduje/2c1s/server/model"
 )
 
 const TickInterval = (1 * time.Second) / 3
@@ -18,6 +21,7 @@ type Server struct {
 	game       *conways.Game
 	width      int
 	height     int
+	logger     *logger.Logger
 }
 
 // message: [width, height, board]
@@ -28,6 +32,7 @@ func NewServer(width, height int) *Server {
 		game:       conways.NewGame(width, height),
 		width:      width,
 		height:     height,
+		logger:     logger.NewLogger("debug.log"),
 	}
 }
 
@@ -35,18 +40,19 @@ func (s *Server) Start() {
 	addr := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
-		fmt.Println("Error starting server:", err)
+		s.logger.Log(fmt.Sprintf("Error starting server: %v", err))
 		return
 	}
 	defer listener.Close()
 
-	fmt.Println("Server started, listening on", addr)
+	s.logger.Log(fmt.Sprintf("Server started, listening on %v", addr))
 
 	ticker := time.NewTicker(TickInterval)
 	defer ticker.Stop()
 
 	framNum := 0
 
+	// TODO: consider moving this to the bubbletea program
 	go func() {
 		for range ticker.C {
 			s.SendMessageToClients(framNum)
@@ -54,15 +60,24 @@ func (s *Server) Start() {
 		}
 	}()
 
+	go func() {
+		p := tea.NewProgram(model.NewModel(), tea.WithAltScreen())
+
+		if _, err := p.Run(); err != nil {
+			s.logger.Log(fmt.Sprintf("Error starting program: %v", err))
+			os.Exit(1)
+		}
+	}()
+
 	// accept new clients
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println("Error accepting connection:", err)
+			s.logger.Log(fmt.Sprintf("Error accepting connection: %s", err))
 			continue
 		}
 
-		fmt.Println("New client connected:", conn.RemoteAddr().String())
+		s.logger.Log(fmt.Sprintf("New client connected: %s", conn.RemoteAddr().String()))
 
 		s.clientsMtx.Lock()
 		s.clients = append(s.clients, conn)
@@ -95,7 +110,7 @@ func (s *Server) SendMessageToClients(frameNum int) {
 	for _, conn := range s.clients {
 		_, err := conn.Write(s.buildMessage())
 		if err != nil {
-			fmt.Println("Error writing to client:", err)
+			s.logger.Log(fmt.Sprintf("Error writing to client: %v", err))
 			conn.Close()
 			s.clients = removeClient(s.clients, conn)
 		}
