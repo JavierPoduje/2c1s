@@ -6,14 +6,14 @@ import (
 )
 
 type Model struct {
-	height int
-	width  int
+	terminalHeight int
+	terminalWidth  int
 }
 
 func NewModel() Model {
 	return Model{
-		height: 0,
-		width:  0,
+		terminalHeight: 0,
+		terminalWidth:  0,
 	}
 }
 
@@ -22,7 +22,7 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m *Model) HandleWindowResize(msg tea.WindowSizeMsg) {
-	m.width, m.height = msg.Width, msg.Height
+	m.terminalWidth, m.terminalHeight = msg.Width, msg.Height
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -40,12 +40,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
 	return lipgloss.Place(
-		m.width, m.height,
+		m.terminalWidth, m.terminalHeight,
 		lipgloss.Center, lipgloss.Center,
 		lipgloss.JoinVertical(
 			lipgloss.Center,
 			titleComp("2 Clients 1 Server"),
-			subtitleComp("Conway's Game of Life"),
+			lipgloss.JoinHorizontal(
+				lipgloss.Center,
+				subtitleComp("Conway's Game of Life"),
+				ActionButton("[S]tart"),
+			),
 		),
 	)
 }

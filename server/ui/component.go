@@ -14,3 +14,8 @@ func subtitleComp(text string) string {
 		Foreground(magentaColor()).
 		Render(text)
 }
+
+func ActionButton(label string) string {
+	return ActionButtonStyles().
+		Render(label)
+}
