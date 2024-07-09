@@ -16,6 +16,7 @@ type Model struct {
 	logger               *logger.Logger
 	running              bool
 	sendMessageToClients func()
+	actionButtonLabel    string
 }
 
 func (m Model) tick() tea.Cmd {
@@ -32,6 +33,7 @@ func NewModel(messageToClientsCallback func()) Model {
 		logger:               logger.NewLogger("debug.log"),
 		running:              false,
 		sendMessageToClients: messageToClientsCallback,
+		actionButtonLabel:    "[S]tart",
 	}
 }
 
@@ -51,6 +53,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "s":
 			m.running = !m.running
+
+			if m.running {
+				m.actionButtonLabel = "[S]top"
+			} else {
+				m.actionButtonLabel = "[S]tart"
+			}
+
 			return m, m.tick()
 		case "q", "esc", "ctrl+c":
 			return m, tea.Quit
@@ -77,7 +86,7 @@ func (m Model) View() string {
 			lipgloss.JoinHorizontal(
 				lipgloss.Center,
 				subtitleComp("Conway's Game of Life"),
-				ActionButton("[S]tart"),
+				ActionButton(m.actionButtonLabel),
 			),
 		),
 	)
