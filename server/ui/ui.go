@@ -1,24 +1,42 @@
 package ui
 
 import (
+	"time"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/javierpoduje/2c1s/server/logger"
 )
 
+type TickMsg time.Time
+
 type Model struct {
-	terminalHeight int
-	terminalWidth  int
+	terminalHeight       int
+	terminalWidth        int
+	logger               *logger.Logger
+	running              bool
+	sendMessageToClients func()
 }
 
-func NewModel() Model {
+func (m Model) tick() tea.Cmd {
+	const tickInterval = (1 * time.Second) / 3
+	return tea.Tick(tickInterval, func(t time.Time) tea.Msg {
+		return TickMsg(t)
+	})
+}
+
+func NewModel(messageToClientsCallback func()) Model {
 	return Model{
-		terminalHeight: 0,
-		terminalWidth:  0,
+		terminalHeight:       0,
+		terminalWidth:        0,
+		logger:               logger.NewLogger("debug.log"),
+		running:              false,
+		sendMessageToClients: messageToClientsCallback,
 	}
 }
 
 func (m Model) Init() tea.Cmd {
-	return nil
+	return m.tick()
 }
 
 func (m *Model) HandleWindowResize(msg tea.WindowSizeMsg) {
@@ -31,10 +49,21 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.HandleWindowResize(msg)
 	case tea.KeyMsg:
 		switch msg.String() {
+		case "s":
+			m.running = !m.running
+			return m, m.tick()
 		case "q", "esc", "ctrl+c":
 			return m, tea.Quit
 		}
+	case TickMsg:
+		if !m.running {
+			return m, nil
+		}
+
+		m.sendMessageToClients()
+		return m, m.tick()
 	}
+
 	return m, nil
 }
 

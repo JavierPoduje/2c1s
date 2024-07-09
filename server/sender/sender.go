@@ -50,18 +50,15 @@ func (s *Server) Start() {
 	ticker := time.NewTicker(TickInterval)
 	defer ticker.Stop()
 
-	framNum := 0
-
 	// TODO: consider moving this to the bubbletea program
-	go func() {
-		for range ticker.C {
-			s.SendMessageToClients(framNum)
-			framNum++
-		}
-	}()
+	//go func() {
+	//    for range ticker.C {
+	//        s.SendMessageToClients()
+	//    }
+	//}()
 
 	go func() {
-		p := tea.NewProgram(ui.NewModel(), tea.WithAltScreen())
+		p := tea.NewProgram(ui.NewModel(s.SendMessageToClients), tea.WithAltScreen())
 
 		if _, err := p.Run(); err != nil {
 			s.logger.Log(fmt.Sprintf("Error starting program: %v", err))
@@ -82,14 +79,12 @@ func (s *Server) Start() {
 		s.clientsMtx.Lock()
 		s.clients = append(s.clients, conn)
 		s.clientsMtx.Unlock()
-
-		go handleClient(conn)
 	}
 
 }
 
 // Probably, this function should receive width and hegiht as parameters later...
-func (s *Server) SendMessageToClients(frameNum int) {
+func (s *Server) SendMessageToClients() {
 	s.clientsMtx.Lock()
 	defer s.clientsMtx.Unlock()
 
@@ -98,14 +93,7 @@ func (s *Server) SendMessageToClients(frameNum int) {
 		return
 	}
 
-	// TODO: the width and the height should be updated in the "admin", not here
-	if frameNum == 0 {
-		// don't do nothing
-	} else if frameNum == 15 {
-		s.game.Update(s.game.Board.Height()+2, s.game.Board.Width()+2)
-	} else {
-		s.game.Update(s.game.Board.Height(), s.game.Board.Width())
-	}
+	s.game.Update(s.game.Board.Height(), s.game.Board.Width())
 
 	for _, conn := range s.clients {
 		_, err := conn.Write(s.buildMessage())
@@ -121,7 +109,11 @@ func (s *Server) buildMessage() []byte {
 	widthAsByte := byte(s.game.Board.Width())
 	heightAsByte := byte(s.game.Board.Height())
 	flattenBoard := s.game.Board.Flatten()
-	return append([]byte{widthAsByte, heightAsByte}, flattenBoard...)
+
+	return append([]byte{
+		widthAsByte,
+		heightAsByte,
+	}, flattenBoard...)
 }
 
 func removeClient(clients []net.Conn, clientToRemove net.Conn) []net.Conn {
@@ -131,11 +123,4 @@ func removeClient(clients []net.Conn, clientToRemove net.Conn) []net.Conn {
 		}
 	}
 	return clients
-}
-
-func handleClient(conn net.Conn) {
-	defer conn.Close()
-
-	// Placeholder for any client-specific handling. could be useful later...
-	select {}
 }
