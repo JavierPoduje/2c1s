@@ -1,25 +1,26 @@
 package ui
 
 import (
-	"strings"
-
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
 type Model struct {
-	msg    ServerMsg
-	height int
-	width  int
+	msgFromServer  ServerMsg
+	terminalHeight int
+	terminalWidth  int
 }
 
-type ServerMsg []byte
+type ServerMsg struct {
+	Height int
+	Width  int
+	Board  []byte
+}
 
 func NewModel() Model {
 	return Model{
-		msg:    ServerMsg{},
-		height: 0,
-		width:  0,
+		msgFromServer:  ServerMsg{},
+		terminalHeight: 0,
+		terminalWidth:  0,
 	}
 }
 
@@ -28,7 +29,7 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m *Model) HandleWindowResize(msg tea.WindowSizeMsg) {
-	m.width, m.height = msg.Width, msg.Height
+	m.terminalWidth, m.terminalHeight = msg.Width, msg.Height
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -36,7 +37,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.HandleWindowResize(msg)
 	case ServerMsg:
-		m.msg = msg
+		m.msgFromServer = msg
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "q", "esc", "ctrl+c":
@@ -47,30 +48,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	if len(m.msg) == 0 {
-		return ""
-	}
+	width := m.msgFromServer.Width
+	height := m.msgFromServer.Height
+	rawBoard := m.msgFromServer.Board
 
-	width := int(m.msg[0])
-	height := int(m.msg[1])
-	board := m.msg[2:]
-
-	str := strings.Builder{}
-
-	for y := 0; y < width; y++ {
-		for x := 0; x < height; x++ {
-			if board[y*height+x] == byte(1) {
-				str.WriteString(AliveCell())
-			} else {
-				str.WriteString(DeadCell())
-			}
-		}
-		str.WriteString("\n")
-	}
-
-	return lipgloss.Place(
-		m.width, m.height,
-		lipgloss.Center, lipgloss.Center,
-		str.String(),
+	return Layout(
+		m.terminalWidth,
+		m.terminalHeight,
+		Board(height, width, rawBoard),
 	)
 }

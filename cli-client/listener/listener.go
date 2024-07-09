@@ -52,6 +52,19 @@ func (c *Listener) Start() {
 			return
 		}
 
-		c.teaProgram.Send(ui.ServerMsg(buffer[:n]))
+		parsedMessage := parseMessage(buffer[:n])
+		c.teaProgram.Send(ui.ServerMsg(parsedMessage))
+	}
+}
+
+func parseMessage(msg []byte) ui.ServerMsg {
+	width := int(msg[0])
+	height := int(msg[1])
+	board := msg[2:]
+
+	return ui.ServerMsg{
+		Width:  width,
+		Height: height,
+		Board:  board,
 	}
 }
