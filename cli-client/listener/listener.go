@@ -7,7 +7,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/javierpoduje/2c1s/cli-client/logger"
-	"github.com/javierpoduje/2c1s/cli-client/model"
+	"github.com/javierpoduje/2c1s/cli-client/ui"
 )
 
 type Listener struct {
@@ -33,7 +33,7 @@ func (c *Listener) Start() {
 	defer conn.Close()
 
 	go func() {
-		p := tea.NewProgram(model.NewModel(), tea.WithAltScreen())
+		p := tea.NewProgram(ui.NewModel(), tea.WithAltScreen())
 		c.teaProgram = p
 
 		if _, err := p.Run(); err != nil {
@@ -52,6 +52,6 @@ func (c *Listener) Start() {
 			return
 		}
 
-		c.teaProgram.Send(model.ServerMsg(buffer[:n]))
+		c.teaProgram.Send(ui.ServerMsg(buffer[:n]))
 	}
 }

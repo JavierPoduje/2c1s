@@ -1,7 +1,8 @@
-package model
+package ui
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type Model struct {
@@ -38,5 +39,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	return "this is bubbletea, baby!"
+	return lipgloss.Place(
+		m.width, m.height,
+		lipgloss.Center, lipgloss.Center,
+		lipgloss.JoinVertical(
+			lipgloss.Center,
+			titleComp("2 Clients 1 Server"),
+			subtitleComp("Conway's Game of Life"),
+		),
+	)
 }

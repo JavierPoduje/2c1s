@@ -1,4 +1,4 @@
-package model
+package ui
 
 import (
 	"strings"
@@ -60,9 +60,9 @@ func (m Model) View() string {
 	for y := 0; y < width; y++ {
 		for x := 0; x < height; x++ {
 			if board[y*height+x] == byte(1) {
-				str.WriteString("🟩")
+				str.WriteString(AliveCell())
 			} else {
-				str.WriteString("⬛")
+				str.WriteString(DeadCell())
 			}
 		}
 		str.WriteString("\n")

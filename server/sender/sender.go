@@ -10,7 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/javierpoduje/2c1s/cli-client/logger"
 	"github.com/javierpoduje/2c1s/server/conways"
-	"github.com/javierpoduje/2c1s/server/model"
+	"github.com/javierpoduje/2c1s/server/ui"
 )
 
 const TickInterval = (1 * time.Second) / 3
@@ -61,7 +61,7 @@ func (s *Server) Start() {
 	}()
 
 	go func() {
-		p := tea.NewProgram(model.NewModel(), tea.WithAltScreen())
+		p := tea.NewProgram(ui.NewModel(), tea.WithAltScreen())
 
 		if _, err := p.Run(); err != nil {
 			s.logger.Log(fmt.Sprintf("Error starting program: %v", err))
