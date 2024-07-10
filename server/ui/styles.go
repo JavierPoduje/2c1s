@@ -1,13 +1,13 @@
 package ui
 
-import "github.com/charmbracelet/lipgloss"
+import gloss "github.com/charmbracelet/lipgloss"
 
-func ActionButtonStyles() lipgloss.Style {
-	return lipgloss.NewStyle().
+func ActionButtonStyles() gloss.Style {
+	return gloss.NewStyle().
 		Foreground(foregroundColor()).
-		BorderStyle(lipgloss.RoundedBorder()).
+		BorderStyle(gloss.RoundedBorder()).
 		BorderForeground(cyanColor()).
-		Align(lipgloss.Center, lipgloss.Center).
+		Align(gloss.Center, gloss.Center).
 		Width(12).
 		Height(3)
 }

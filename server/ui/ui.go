@@ -4,7 +4,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	gloss "github.com/charmbracelet/lipgloss"
 	"github.com/javierpoduje/2c1s/server/logger"
 )
 
@@ -77,16 +77,21 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	return lipgloss.Place(
+	return gloss.Place(
 		m.terminalWidth, m.terminalHeight,
-		lipgloss.Center, lipgloss.Center,
-		lipgloss.JoinVertical(
-			lipgloss.Center,
+		gloss.Center, gloss.Center,
+		gloss.JoinVertical(
+			gloss.Center,
 			titleComp("2 Clients 1 Server"),
-			lipgloss.JoinHorizontal(
-				lipgloss.Center,
+			gloss.JoinHorizontal(
+				gloss.Center,
 				subtitleComp("Conway's Game of Life"),
-				ActionButton(m.actionButtonLabel),
+				gloss.JoinVertical(
+					gloss.Left,
+					ActionButton(m.actionButtonLabel),
+					Dimenssion("Height ", "0"),
+					Dimenssion("Width ", "0"),
+				),
 			),
 		),
 	)

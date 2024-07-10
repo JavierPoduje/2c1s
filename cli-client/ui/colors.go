@@ -1,11 +1,11 @@
 package ui
 
-import "github.com/charmbracelet/lipgloss"
+import gloss "github.com/charmbracelet/lipgloss"
 
-func AliveCellColor() lipgloss.Color {
-	return lipgloss.Color("#40A02B")
+func AliveCellColor() gloss.Color {
+	return gloss.Color("#40A02B")
 }
 
-func DeadCellColor() lipgloss.Color {
-	return lipgloss.Color("#494D64")
+func DeadCellColor() gloss.Color {
+	return gloss.Color("#494D64")
 }

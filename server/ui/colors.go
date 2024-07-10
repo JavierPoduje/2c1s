@@ -1,39 +1,42 @@
 package ui
 
-import "github.com/charmbracelet/lipgloss"
+import gloss "github.com/charmbracelet/lipgloss"
 
-func foregroundColor() lipgloss.Color {
-	return lipgloss.Color("#CAD3F5")
+func foregroundColor() gloss.Color {
+	return gloss.Color("#CAD3F5")
+}
+func secondaryForegroundColor() gloss.Color {
+	return gloss.Color("#5c5f77")
 }
 
-func blackColor() lipgloss.Color {
-	return lipgloss.Color("#494D64")
+func blackColor() gloss.Color {
+	return gloss.Color("#494D64")
 }
 
-func redColor() lipgloss.Color {
-	return lipgloss.Color("#ED8796")
+func redColor() gloss.Color {
+	return gloss.Color("#ED8796")
 }
 
-func greenColor() lipgloss.Color {
-	return lipgloss.Color("#A6DA95")
+func greenColor() gloss.Color {
+	return gloss.Color("#A6DA95")
 }
 
-func yellowColor() lipgloss.Color {
-	return lipgloss.Color("#EED49F")
+func yellowColor() gloss.Color {
+	return gloss.Color("#EED49F")
 }
 
-func blueColor() lipgloss.Color {
-	return lipgloss.Color("#8AADF4")
+func blueColor() gloss.Color {
+	return gloss.Color("#8AADF4")
 }
 
-func magentaColor() lipgloss.Color {
-	return lipgloss.Color("#F5BDE6")
+func magentaColor() gloss.Color {
+	return gloss.Color("#F5BDE6")
 }
 
-func cyanColor() lipgloss.Color {
-	return lipgloss.Color("#8BD5CA")
+func cyanColor() gloss.Color {
+	return gloss.Color("#8BD5CA")
 }
 
-func whiteColor() lipgloss.Color {
-	return lipgloss.Color("#B8C0E0")
+func whiteColor() gloss.Color {
+	return gloss.Color("#B8C0E0")
 }

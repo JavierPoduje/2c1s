@@ -3,7 +3,7 @@ package ui
 import (
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	gloss "github.com/charmbracelet/lipgloss"
 )
 
 // the char is the biggest possible ascii square
@@ -26,9 +26,9 @@ func Board(height, width int, boardSlice []byte) string {
 }
 
 func Layout(terminalWidth, terminalHeight int, content string) string {
-	return lipgloss.Place(
+	return gloss.Place(
 		terminalWidth, terminalHeight,
-		lipgloss.Center, lipgloss.Center,
+		gloss.Center, gloss.Center,
 		content,
 	)
 }
@@ -41,8 +41,8 @@ func DeadCell() string {
 	return cell(DeadCellColor())
 }
 
-func cell(color lipgloss.Color) string {
-	return lipgloss.
+func cell(color gloss.Color) string {
+	return gloss.
 		NewStyle().
 		Foreground(color).
 		Render(CellChar)
