@@ -4,9 +4,9 @@ type Game struct {
 	Board *Board
 }
 
-func NewGame(width, height int) *Game {
+func NewGame(height, width int) *Game {
 	return &Game{
-		Board: newBoard(width, height),
+		Board: newBoard(height, width),
 	}
 }
 

@@ -22,18 +22,18 @@ export default class MessageHandler {
 		const height = message[1];
 		const boardFromMessage = message.slice(2);
 
-		this.buildBoard(width, height);
-		this.colorizeBoard(boardFromMessage, width, height);
+		this.buildBoard(height, width);
+		this.colorizeBoard(boardFromMessage, height, width);
 	}
 
 	/**
 	 * Colorizes the board based on the given board items.
 	 *
 	 * @param {Uint8Array} boardItems
-	 * @param {number} width
 	 * @param {number} height
+   * @param {number} width
 	 */
-	colorizeBoard(boardItems, width, height) {
+	colorizeBoard(boardItems, height, width) {
 		for (let y = 0; y < height; y++) {
 			for (let x = 0; x < width; x++) {
 				const index = y * width + x;
@@ -64,10 +64,10 @@ export default class MessageHandler {
 	/**
 	 * Builds the board with the given width and height.
 	 *
+   * @param {number} height
 	 * @param {number} width
-	 * @param {number} height
 	 */
-	buildBoard(width, height) {
+	buildBoard(height, width) {
 		const board = this.getBoard();
 		if (!board) {
 			console.error("couldn't find the board element");
@@ -75,7 +75,7 @@ export default class MessageHandler {
 		}
 
 		this.clearBoard();
-		this.fillBoard(width, height);
+		this.fillBoard(height, width);
 	}
 
 	/**
@@ -90,10 +90,10 @@ export default class MessageHandler {
 	/**
 	 * Fill the board with "neutral" cells (they aren't alive nor dead just yet)
 	 *
+   * @param {number} height
 	 * @param {number} width
-	 * @param {number} height
 	 */
-	fillBoard(width, height) {
+	fillBoard(height, width) {
 		const board = document.querySelector(".board");
 		if (!board) {
 			console.error("couldn't find the board element");

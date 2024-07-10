@@ -1,6 +1,10 @@
 package ui
 
-import gloss "github.com/charmbracelet/lipgloss"
+import (
+	"strconv"
+
+	gloss "github.com/charmbracelet/lipgloss"
+)
 
 func titleComp(text string) string {
 	return gloss.NewStyle().
@@ -20,7 +24,7 @@ func ActionButton(label string) string {
 		Render(label)
 }
 
-func Dimenssion(label, dimenssion string) string {
+func Dimenssion(label string, dimenssion int) string {
 	return gloss.JoinHorizontal(
 		gloss.Center,
 		DimenssionButton(label),
@@ -33,8 +37,9 @@ func DimenssionButton(label string) string {
 		Render(label)
 }
 
-func DimenssionValue(value string) string {
+func DimenssionValue(value int) string {
+	valueAsString := strconv.Itoa(value)
 	return gloss.NewStyle().
 		Foreground(secondaryForegroundColor()).
-		Render(value)
+		Render(valueAsString)
 }

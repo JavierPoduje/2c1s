@@ -19,8 +19,6 @@ type Server struct {
 	clients    []net.Conn
 	clientsMtx sync.Mutex
 	game       *conways.Game
-	width      int
-	height     int
 	logger     *logger.Logger
 }
 
@@ -29,14 +27,12 @@ func NewServer(width, height int) *Server {
 	return &Server{
 		clients:    []net.Conn{},
 		clientsMtx: sync.Mutex{},
-		game:       conways.NewGame(width, height),
-		width:      width,
-		height:     height,
+		game:       conways.NewGame(height, height),
 		logger:     logger.NewLogger("debug.log"),
 	}
 }
 
-func (s *Server) Start() {
+func (s *Server) Start(height, width int) {
 	addr := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -50,15 +46,8 @@ func (s *Server) Start() {
 	ticker := time.NewTicker(TickInterval)
 	defer ticker.Stop()
 
-	// TODO: consider moving this to the bubbletea program
-	//go func() {
-	//    for range ticker.C {
-	//        s.SendMessageToClients()
-	//    }
-	//}()
-
 	go func() {
-		p := tea.NewProgram(ui.NewModel(s.SendMessageToClients), tea.WithAltScreen())
+		p := tea.NewProgram(ui.NewModel(s.SendMessageToClients, height, width), tea.WithAltScreen())
 
 		if _, err := p.Run(); err != nil {
 			s.logger.Log(fmt.Sprintf("Error starting program: %v", err))
@@ -84,7 +73,7 @@ func (s *Server) Start() {
 }
 
 // Probably, this function should receive width and hegiht as parameters later...
-func (s *Server) SendMessageToClients() {
+func (s *Server) SendMessageToClients(height, width int) {
 	s.clientsMtx.Lock()
 	defer s.clientsMtx.Unlock()
 
@@ -93,10 +82,10 @@ func (s *Server) SendMessageToClients() {
 		return
 	}
 
-	s.game.Update(s.game.Board.Height(), s.game.Board.Width())
+	s.game.Update(height, width)
 
 	for _, conn := range s.clients {
-		_, err := conn.Write(s.buildMessage())
+		_, err := conn.Write(s.buildMessage(height, width))
 		if err != nil {
 			s.logger.Log(fmt.Sprintf("Error writing to client: %v", err))
 			conn.Close()
@@ -105,9 +94,9 @@ func (s *Server) SendMessageToClients() {
 	}
 }
 
-func (s *Server) buildMessage() []byte {
-	widthAsByte := byte(s.game.Board.Width())
-	heightAsByte := byte(s.game.Board.Height())
+func (s *Server) buildMessage(height, width int) []byte {
+	widthAsByte := byte(width)
+	heightAsByte := byte(height)
 	flattenBoard := s.game.Board.Flatten()
 
 	return append([]byte{

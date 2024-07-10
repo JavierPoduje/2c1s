@@ -13,9 +13,11 @@ type TickMsg time.Time
 type Model struct {
 	terminalHeight       int
 	terminalWidth        int
+	boardHeight          int
+	boardWidth           int
 	logger               *logger.Logger
 	running              bool
-	sendMessageToClients func()
+	sendMessageToClients func(height, width int)
 	actionButtonLabel    string
 }
 
@@ -26,10 +28,12 @@ func (m Model) tick() tea.Cmd {
 	})
 }
 
-func NewModel(messageToClientsCallback func()) Model {
+func NewModel(messageToClientsCallback func(height, width int), initialBoardHeight, initialBoardWidth int) Model {
 	return Model{
 		terminalHeight:       0,
 		terminalWidth:        0,
+		boardHeight:          initialBoardHeight,
+		boardWidth:           initialBoardWidth,
 		logger:               logger.NewLogger("debug.log"),
 		running:              false,
 		sendMessageToClients: messageToClientsCallback,
@@ -51,6 +55,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.HandleWindowResize(msg)
 	case tea.KeyMsg:
 		switch msg.String() {
+		case "shift+up":
+			m.boardHeight++
+		case "shift+down":
+			m.boardHeight--
+		case "shift+left":
+			m.boardWidth--
+		case "shift+right":
+			m.boardWidth++
 		case "s":
 			m.running = !m.running
 
@@ -69,7 +81,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
-		m.sendMessageToClients()
+		m.sendMessageToClients(m.boardHeight, m.boardWidth)
 		return m, m.tick()
 	}
 
@@ -89,8 +101,8 @@ func (m Model) View() string {
 				gloss.JoinVertical(
 					gloss.Left,
 					ActionButton(m.actionButtonLabel),
-					Dimenssion("Height ", "0"),
-					Dimenssion("Width ", "0"),
+					Dimenssion("Height ", m.boardHeight),
+					Dimenssion("Width ", m.boardWidth),
 				),
 			),
 		),

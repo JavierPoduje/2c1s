@@ -19,5 +19,5 @@ func main() {
 	}
 
 	s := sender.NewServer(BoardWidth, BoardHeight)
-	s.Start()
+	s.Start(BoardWidth, BoardHeight)
 }

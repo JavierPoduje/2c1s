@@ -62,15 +62,15 @@ func (b Board) Height() int {
 	return len(b)
 }
 
-func newBoard(width, height int) *Board {
-	board := blankBoard(width, height)
-	seed := diamondRing(width, height)
+func newBoard(height, width int) *Board {
+	board := blankBoard(height, width)
+	seed := diamondRing(height, width)
 	placeSeed(&board, seed)
 	return &board
 }
 
 func (b *Board) UpdateBoardDimensions(height, width int) *Board {
-	newBoard := blankBoard(width, height)
+	newBoard := blankBoard(height, width)
 
 	boardHeight := b.Height()
 	boardWidth := b.Width()
@@ -95,7 +95,7 @@ func (b *Board) UpdateBoardDimensions(height, width int) *Board {
 	return &newBoard
 }
 
-func blankBoard(width, height int) Board {
+func blankBoard(height, width int) Board {
 	board := Board{}
 	for y := 0; y < height; y++ {
 		row := []byte{}
