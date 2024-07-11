@@ -1,10 +1,35 @@
-export default class MessageHandler {
-	width = 0;
-	height = 0;
+/**
+ * @typedef ParsedMessage
+ * @type {object}
+ * @property {number} width - width of the board.
+ * @property {number} height - height of the board.
+ * @property {Uint8Array} board - board as bytes[].
+ */
 
-	contructor() {
-		this.width = 0;
-		this.height = 0;
+export default class MessageHandler {
+	contructor() {}
+
+	/**
+	 * Handles a message received from the server. This message is a Uint8Array
+	 * with the following format:
+	 *
+	 * - first byte is the width of the message
+	 * - second byte is the heigth of the message
+	 * - remaining bytes are the board
+	 *
+	 * @param {Uint8Array} message
+	 * @returns {ParsedMessage}
+	 */
+	parseMessage(message) {
+		const width = message[0];
+		const height = message[1];
+		const board = message.slice(2);
+
+		return {
+			width,
+			height,
+			board,
+		};
 	}
 
 	/**
@@ -18,12 +43,9 @@ export default class MessageHandler {
 	 * @param {Uint8Array} message
 	 */
 	handle(message) {
-		const width = message[0];
-		const height = message[1];
-		const boardFromMessage = message.slice(2);
-
+		const { height, width, board } = this.parseMessage(message);
 		this.buildBoard(height, width);
-		this.colorizeBoard(boardFromMessage, height, width);
+		this.colorizeBoard(board, height, width);
 	}
 
 	/**
@@ -31,7 +53,7 @@ export default class MessageHandler {
 	 *
 	 * @param {Uint8Array} boardItems
 	 * @param {number} height
-   * @param {number} width
+	 * @param {number} width
 	 */
 	colorizeBoard(boardItems, height, width) {
 		for (let y = 0; y < height; y++) {
@@ -64,7 +86,7 @@ export default class MessageHandler {
 	/**
 	 * Builds the board with the given width and height.
 	 *
-   * @param {number} height
+	 * @param {number} height
 	 * @param {number} width
 	 */
 	buildBoard(height, width) {
@@ -81,7 +103,7 @@ export default class MessageHandler {
 	/**
 	 * Get the board element
 	 *
-	 * @returns {Element | null}
+	 * @returns {HTMLElement | null}
 	 */
 	getBoard() {
 		return document.querySelector(".board");
@@ -90,15 +112,17 @@ export default class MessageHandler {
 	/**
 	 * Fill the board with "neutral" cells (they aren't alive nor dead just yet)
 	 *
-   * @param {number} height
+	 * @param {number} height
 	 * @param {number} width
 	 */
 	fillBoard(height, width) {
-		const board = document.querySelector(".board");
+		const board = this.getBoard();
 		if (!board) {
 			console.error("couldn't find the board element");
 			return;
 		}
+
+		this.updateBoardDimensions(height, width);
 
 		for (let y = 0; y < height; y++) {
 			for (let x = 0; x < width; x++) {
@@ -112,6 +136,24 @@ export default class MessageHandler {
 				board.appendChild(cell);
 			}
 		}
+	}
+
+	/**
+	 * Updates the board dimensions in CSS.
+	 *
+	 * @param {number} height
+	 * @param {number} width
+	 */
+	updateBoardDimensions(height, width) {
+		const board = this.getBoard();
+		if (!board) {
+			console.error("couldn't find the board element");
+			return;
+		}
+
+		// update board dimensions
+		board.style.setProperty("--board-height", height.toString());
+		board.style.setProperty("--board-width", width.toString());
 	}
 
 	/**

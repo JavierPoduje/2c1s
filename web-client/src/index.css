@@ -1,7 +1,10 @@
 :root {
   --cell-size: 2rem;
   --green: #40a02b;
-  --black: #494D64;
+  --black: #494d64;
+  /* The initial board dimensions are not relevant */
+  --board-height: 0;
+  --board-width: 0;
 }
 
 body {
@@ -16,10 +19,10 @@ body {
 .board {
   background-color: gray;
   display: grid;
-  grid-template-columns: repeat(13, var(--cell-size));
-  grid-template-rows: repeat(13, var(--cell-size));
-  height: calc(13 * var(--cell-size));
-  width: calc(13 * var(--cell-size));
+  grid-template-columns: repeat(var(--board-width), var(--cell-size));
+  grid-template-rows: repeat(var(--board-width), var(--cell-size));
+  height: calc(var(--board-height) * var(--cell-size));
+  width: calc(var(--board-width) * var(--cell-size));
 }
 
 .cell {
