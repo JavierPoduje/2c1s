@@ -10,6 +10,14 @@ func DeadCellColor() gloss.Color {
 	return gloss.Color("#494D64")
 }
 
+func TogglerAliveCellColor() gloss.Color {
+	return blueColor()
+}
+
+func TogglerDeadCellColor() gloss.Color {
+	return redColor()
+}
+
 func foregroundColor() gloss.Color {
 	return gloss.Color("#CAD3F5")
 }

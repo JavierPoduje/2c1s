@@ -16,6 +16,7 @@ type Model struct {
 	boardHeight          int
 	boardWidth           int
 	seed                 [][]int
+	togglerCoord         []int
 	logger               *logger.Logger
 	running              bool
 	sendMessageToClients func(height, width int)
@@ -36,6 +37,7 @@ func NewModel(messageToClientsCallback func(height, width int), initialBoardHeig
 		seed:                 seed,
 		boardHeight:          initialBoardHeight,
 		boardWidth:           initialBoardWidth,
+		togglerCoord:         []int{0, 0},
 		logger:               logger.NewLogger("debug.log"),
 		running:              false,
 		sendMessageToClients: messageToClientsCallback,
@@ -65,6 +67,22 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.boardWidth--
 		case "shift+right":
 			m.boardWidth++
+		case "up":
+			if m.togglerCoord[0] > 0 {
+				m.togglerCoord[0]--
+			}
+		case "down":
+			if m.togglerCoord[0] < m.boardHeight-1 {
+				m.togglerCoord[0]++
+			}
+		case "left":
+			if m.togglerCoord[1] > 0 {
+				m.togglerCoord[1]--
+			}
+		case "right":
+			if m.togglerCoord[1] < m.boardWidth-1 {
+				m.togglerCoord[1]++
+			}
 		case "s":
 			m.running = !m.running
 
@@ -99,7 +117,7 @@ func (m Model) View() string {
 			titleComp("2 Clients 1 Server"),
 			gloss.JoinHorizontal(
 				gloss.Center,
-				BoardSeed(m.boardHeight, m.boardWidth, m.seed),
+				BoardSeed(m.boardHeight, m.boardWidth, m.seed, m.togglerCoord),
 				gloss.JoinVertical(
 					gloss.Left,
 					ActionButton(m.actionButtonLabel),

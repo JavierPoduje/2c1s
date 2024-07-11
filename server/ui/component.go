@@ -9,11 +9,20 @@ import (
 
 const CellChar = "██"
 
-func BoardSeed(height, width int, seed [][]int) string {
+func BoardSeed(height, width int, seed [][]int, togglerCoord []int) string {
 	boardStr := strings.Builder{}
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
+			if togglerCoord[0] == y && togglerCoord[1] == x {
+				if seed[y][x] == 1 {
+					boardStr.WriteString(TogglerAliveCell())
+				} else {
+					boardStr.WriteString(TogglerDeadCell())
+				}
+				continue
+			}
+
 			if seed[y][x] == 1 {
 				boardStr.WriteString(AliveCell())
 			} else {
@@ -24,6 +33,14 @@ func BoardSeed(height, width int, seed [][]int) string {
 	}
 
 	return BoardStyles().Render(boardStr.String())
+}
+
+func TogglerAliveCell() string {
+	return cell(TogglerAliveCellColor())
+}
+
+func TogglerDeadCell() string {
+	return cell(TogglerDeadCellColor())
 }
 
 func AliveCell() string {
