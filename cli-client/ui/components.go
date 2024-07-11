@@ -11,9 +11,9 @@ const CellChar = "██"
 
 func Board(height, width int, boardSlice []byte) string {
 	board := strings.Builder{}
-	for y := 0; y < width; y++ {
-		for x := 0; x < height; x++ {
-			idx := y*height + x
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			idx := y*width + x
 			if boardSlice[idx] == byte(1) {
 				board.WriteString(AliveCell())
 			} else {

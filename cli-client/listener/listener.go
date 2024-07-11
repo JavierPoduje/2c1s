@@ -52,19 +52,23 @@ func (c *Listener) Start() {
 			return
 		}
 
-		parsedMessage := parseMessage(buffer[:n])
+		parsedMessage := c.parseMessage(buffer[:n])
 		c.teaProgram.Send(ui.ServerMsg(parsedMessage))
 	}
 }
 
-func parseMessage(msg []byte) ui.ServerMsg {
+func (l Listener) parseMessage(msg []byte) ui.ServerMsg {
 	width := int(msg[0])
 	height := int(msg[1])
 	board := msg[2:]
 
-	return ui.ServerMsg{
+	serverMessage := ui.ServerMsg{
 		Width:  width,
 		Height: height,
 		Board:  board,
 	}
+
+	l.logger.Log(fmt.Sprintf("message: %v\n", serverMessage))
+
+	return serverMessage
 }
