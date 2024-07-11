@@ -15,6 +15,7 @@ type Model struct {
 	terminalWidth        int
 	boardHeight          int
 	boardWidth           int
+	seed                 [][]int
 	logger               *logger.Logger
 	running              bool
 	sendMessageToClients func(height, width int)
@@ -28,10 +29,11 @@ func (m Model) tick() tea.Cmd {
 	})
 }
 
-func NewModel(messageToClientsCallback func(height, width int), initialBoardHeight, initialBoardWidth int) Model {
+func NewModel(messageToClientsCallback func(height, width int), initialBoardHeight, initialBoardWidth int, seed [][]int) Model {
 	return Model{
 		terminalHeight:       0,
 		terminalWidth:        0,
+		seed:                 seed,
 		boardHeight:          initialBoardHeight,
 		boardWidth:           initialBoardWidth,
 		logger:               logger.NewLogger("debug.log"),
@@ -97,7 +99,7 @@ func (m Model) View() string {
 			titleComp("2 Clients 1 Server"),
 			gloss.JoinHorizontal(
 				gloss.Center,
-				subtitleComp("Conway's Game of Life"),
+				BoardSeed(m.boardHeight, m.boardWidth, m.seed),
 				gloss.JoinVertical(
 					gloss.Left,
 					ActionButton(m.actionButtonLabel),

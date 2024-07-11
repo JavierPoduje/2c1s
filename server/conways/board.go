@@ -62,9 +62,8 @@ func (b Board) Height() int {
 	return len(b)
 }
 
-func newBoard(height, width int) *Board {
+func NewBoard(height, width int, seed [][]int) *Board {
 	board := blankBoard(height, width)
-	seed := diamondRing(height, width)
 	placeSeed(&board, seed)
 	return &board
 }

@@ -5,15 +5,12 @@ import (
 	"net"
 	"os"
 	"sync"
-	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/javierpoduje/2c1s/cli-client/logger"
 	"github.com/javierpoduje/2c1s/server/conways"
 	"github.com/javierpoduje/2c1s/server/ui"
 )
-
-const TickInterval = (1 * time.Second) / 3
 
 type Server struct {
 	clients    []net.Conn
@@ -23,16 +20,16 @@ type Server struct {
 }
 
 // message: [width, height, board]
-func NewServer(width, height int) *Server {
+func NewServer(width, height int, seed [][]int) *Server {
 	return &Server{
 		clients:    []net.Conn{},
 		clientsMtx: sync.Mutex{},
-		game:       conways.NewGame(height, height),
+		game:       conways.NewGame(height, height, seed),
 		logger:     logger.NewLogger("debug.log"),
 	}
 }
 
-func (s *Server) Start(height, width int) {
+func (s *Server) Start(height, width int, seed [][]int) {
 	addr := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -43,11 +40,8 @@ func (s *Server) Start(height, width int) {
 
 	s.logger.Log(fmt.Sprintf("Server started, listening on %v", addr))
 
-	ticker := time.NewTicker(TickInterval)
-	defer ticker.Stop()
-
 	go func() {
-		p := tea.NewProgram(ui.NewModel(s.SendMessageToClients, height, width), tea.WithAltScreen())
+		p := tea.NewProgram(ui.NewModel(s.SendMessageToClients, height, width, seed), tea.WithAltScreen())
 
 		if _, err := p.Run(); err != nil {
 			s.logger.Log(fmt.Sprintf("Error starting program: %v", err))
