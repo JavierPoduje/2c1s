@@ -67,6 +67,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.boardWidth--
 		case "shift+right":
 			m.boardWidth++
+		case " ":
+			togglerY, togglerX := m.togglerCoord[0], m.togglerCoord[1]
+			seedIsAlive := m.seed[togglerY][togglerX] == 1
+			if seedIsAlive {
+				m.seed[togglerY][togglerX] = 0
+			} else {
+				m.seed[togglerY][togglerX] = 1
+			}
 		case "up":
 			if m.togglerCoord[0] > 0 {
 				m.togglerCoord[0]--
