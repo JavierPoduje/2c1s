@@ -65,18 +65,22 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.boardHeight++
 			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
 			m.seedWasUpdated = true
+			m.togglerCoord = []int{0, 0}
 		case "shift+down":
 			m.boardHeight--
 			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
 			m.seedWasUpdated = true
+			m.togglerCoord = []int{0, 0}
 		case "shift+left":
 			m.boardWidth--
 			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
 			m.seedWasUpdated = true
+			m.togglerCoord = []int{0, 0}
 		case "shift+right":
 			m.boardWidth++
 			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
 			m.seedWasUpdated = true
+			m.togglerCoord = []int{0, 0}
 		case " ":
 			togglerY, togglerX := m.togglerCoord[0], m.togglerCoord[1]
 			seedIsAlive := m.seed[togglerY][togglerX] == 1
