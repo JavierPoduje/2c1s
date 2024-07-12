@@ -61,12 +61,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "shift+up":
 			m.boardHeight++
+			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
 		case "shift+down":
 			m.boardHeight--
+			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
 		case "shift+left":
 			m.boardWidth--
+			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
 		case "shift+right":
 			m.boardWidth++
+			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
 		case " ":
 			togglerY, togglerX := m.togglerCoord[0], m.togglerCoord[1]
 			seedIsAlive := m.seed[togglerY][togglerX] == 1
@@ -135,4 +139,40 @@ func (m Model) View() string {
 			),
 		),
 	)
+}
+
+func updateSeedDimensions(currentSeed [][]int, newHeight, newWidth int) [][]int {
+	newSeed := blankSeed(newHeight, newWidth)
+
+	currentHeight := len(currentSeed)
+	currentWidth := len(currentSeed[0])
+
+	for y := 0; y < currentHeight; y++ {
+		if y >= newHeight {
+			break
+		}
+		for x := 0; x < currentWidth; x++ {
+			if x >= newWidth {
+				continue
+			}
+
+			// take the value of the current board
+			value := currentSeed[y][x]
+			newSeed[y][x] = value
+		}
+	}
+
+	return newSeed
+}
+
+func blankSeed(height, width int) [][]int {
+	seed := make([][]int, height)
+	for y := 0; y < height; y++ {
+		row := make([]int, width)
+		for x := 0; x < width; x++ {
+			row[x] = 0
+		}
+		seed[y] = row
+	}
+	return seed
 }

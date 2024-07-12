@@ -13,7 +13,20 @@ func BoardSeed(height, width int, seed [][]int, togglerCoord []int) string {
 	boardStr := strings.Builder{}
 
 	for y := 0; y < height; y++ {
+		if y >= len(seed) {
+			for x := 0; x < width; x++ {
+				boardStr.WriteString(TogglerDeadCell())
+			}
+			boardStr.WriteString("\n")
+			continue
+		}
+
 		for x := 0; x < width; x++ {
+			if x >= len(seed[0]) {
+				boardStr.WriteString(TogglerDeadCell())
+				continue
+			}
+
 			if togglerCoord[0] == y && togglerCoord[1] == x {
 				if seed[y][x] == 1 {
 					boardStr.WriteString(TogglerAliveCell())
