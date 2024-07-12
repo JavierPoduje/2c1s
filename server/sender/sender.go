@@ -67,9 +67,13 @@ func (s *Server) Start(height, width int, seed [][]int) {
 }
 
 // Probably, this function should receive width and hegiht as parameters later...
-func (s *Server) SendMessageToClients(height, width int) {
+func (s *Server) SendMessageToClients(height, width int, seed [][]int) {
 	s.clientsMtx.Lock()
 	defer s.clientsMtx.Unlock()
+
+	if len(seed) != 0 {
+		s.game.Board = conways.NewBoard(height, width, seed)
+	}
 
 	// don't do anything if there are no clients connected
 	if len(s.clients) == 0 {

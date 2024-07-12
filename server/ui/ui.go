@@ -16,10 +16,11 @@ type Model struct {
 	boardHeight          int
 	boardWidth           int
 	seed                 [][]int
+	seedWasUpdated       bool
 	togglerCoord         []int
 	logger               *logger.Logger
 	running              bool
-	sendMessageToClients func(height, width int)
+	sendMessageToClients func(height, width int, seed [][]int)
 	actionButtonLabel    string
 }
 
@@ -30,11 +31,12 @@ func (m Model) tick() tea.Cmd {
 	})
 }
 
-func NewModel(messageToClientsCallback func(height, width int), initialBoardHeight, initialBoardWidth int, seed [][]int) Model {
+func NewModel(messageToClientsCallback func(height, width int, seed [][]int), initialBoardHeight, initialBoardWidth int, seed [][]int) Model {
 	return Model{
 		terminalHeight:       0,
 		terminalWidth:        0,
 		seed:                 seed,
+		seedWasUpdated:       false,
 		boardHeight:          initialBoardHeight,
 		boardWidth:           initialBoardWidth,
 		togglerCoord:         []int{0, 0},
@@ -62,15 +64,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "shift+up":
 			m.boardHeight++
 			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
+			m.seedWasUpdated = true
 		case "shift+down":
 			m.boardHeight--
 			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
+			m.seedWasUpdated = true
 		case "shift+left":
 			m.boardWidth--
 			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
+			m.seedWasUpdated = true
 		case "shift+right":
 			m.boardWidth++
 			m.seed = updateSeedDimensions(m.seed, m.boardHeight, m.boardWidth)
+			m.seedWasUpdated = true
 		case " ":
 			togglerY, togglerX := m.togglerCoord[0], m.togglerCoord[1]
 			seedIsAlive := m.seed[togglerY][togglerX] == 1
@@ -79,6 +85,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.seed[togglerY][togglerX] = 1
 			}
+			m.seedWasUpdated = true
 		case "up":
 			if m.togglerCoord[0] > 0 {
 				m.togglerCoord[0]--
@@ -113,7 +120,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
-		m.sendMessageToClients(m.boardHeight, m.boardWidth)
+		if m.seedWasUpdated {
+			m.sendMessageToClients(m.boardHeight, m.boardWidth, m.seed)
+		} else {
+			m.sendMessageToClients(m.boardHeight, m.boardWidth, [][]int{})
+		}
+
+		m.seedWasUpdated = false
+
 		return m, m.tick()
 	}
 
